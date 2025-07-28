@@ -1,0 +1,131 @@
+$(document).ready(function () {
+  const MAX_CARDS = 12;
+  let lockBoard = false;
+  let hasFlippedCard = false;
+  let firstCard, secondCard;
+
+  const cards = document.querySelectorAll(".memoryCard");
+
+  (function suffleCards() {
+    cards.forEach((card) => {
+      const randomPosition = Math.floor(Math.random() * MAX_CARDS);
+      card.style.order = randomPosition;
+    });
+  })();
+
+  cards.forEach((card) => {
+    card.addEventListener("click", handleCardFlip);
+  });
+
+  function handleCardFlip() {
+    if (lockBoard || firstCard === this) {
+      return;
+    }
+
+    this.classList.add("flip");
+
+    if (!hasFlippedCard) {
+      hasFlippedCard = true;
+      firstCard = this;
+      return;
+    }
+
+    secondCard = this;
+    checkForMatch();
+  }
+
+  function checkForMatch() {
+    const isMatch = firstCard.dataset.card === secondCard.dataset.card;
+
+    isMatch ? disableMatchedCards() : unflipCards();
+  }
+
+  function disableMatchedCards() {
+    firstCard.removeEventListener("click", handleCardFlip);
+    secondCard.removeEventListener("click", handleCardFlip);
+    resetTurn();
+  }
+
+  function unflipCards() {
+    lockBoard = true;
+
+    setTimeout(() => {
+      firstCard.classList.remove("flip");
+      secondCard.classList.remove("flip");
+      resetTurn();
+    }, 1500);
+  }
+
+  function resetTurn() {
+    [hasFlippedCard, lockBoard, firstCard, secondCard] = [false, false];
+    [firstCard, secondCard] = [null, null];
+  }
+
+  let hartryPoterImageResulte = [];
+  let dogsImageResulte = [];
+  let flagsImageResulte = [];
+
+  //   // get Harry Potter Images
+  //   $.ajax({
+  //     type: "GET",
+  //     dataType: "json",
+  //     url: "https://hp-api.onrender.com/api/characters/students",
+
+  //     success: function (data) {
+  //       for (let i = 0; i < 6; i++) {
+  //         if (data[i].image !== "") {
+  //           hartryPoterImageResulte.push(data[i].image);
+  //         }
+  //       }
+  //     },
+  //   });
+
+  //   // get Dogs Images
+  //   $.ajax({
+  //     type: "GET",
+  //     dataType: "json",
+  //     url: "https://dog.ceo/api/breed/hound/images",
+  //     success: (data) => {
+  //       let res = data.message;
+
+  //       for (let i = 0; i < 6; i++) {
+  //         if (data.message[i] !== "") {
+  //           dogsImageResulte.push(data.message[i]);
+  //         }
+  //       }
+  //     },
+  //   });
+
+  //   // get Flags Images
+  //   $.ajax({
+  //     type: "GET",
+  //     dataType: "json",
+  //     url: "https://restcountries.com/v3.1/all?fields=name,flags",
+  //     success: (data) => {
+  //       for (let i = 0; i < 6; i++) {
+  //         flagsImageResulte.push(data[i].flags.png);
+  //       }
+  //     },
+  //   });
+
+  const gameTheme = document.querySelector(".gameTheme");
+  let curTheme = "";
+  let isThemeSelected = false;
+
+  chooseSelectedTheme();
+
+  function chooseSelectedTheme(e) {
+    gameTheme.addEventListener("change", (e) => {
+      if (!isThemeSelected) {
+        const curThemeE = e.target.value;
+        curTheme = curThemeE;
+        // console.log(curThemeE);
+        isThemeSelected = true;
+      }
+      if (isThemeSelected) {
+        gameTheme.classList.add("d-none");
+        document.querySelector(".memoryGame").classList.remove("d-none");
+      }
+    });
+  }
+});
